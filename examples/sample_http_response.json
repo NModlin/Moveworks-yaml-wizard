@@ -1,0 +1,57 @@
+{
+  "data": {
+    "user": {
+      "id": "usr_12345",
+      "email": "john.doe@company.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "full_name": "John Doe",
+      "department": "Engineering",
+      "title": "Senior Software Engineer",
+      "manager": {
+        "id": "usr_67890",
+        "email": "manager@company.com",
+        "name": "Jane Smith"
+      },
+      "location": {
+        "office": "San Francisco",
+        "building": "Main Campus",
+        "floor": 3
+      },
+      "permissions": [
+        "read_tickets",
+        "create_tickets",
+        "admin_access"
+      ],
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-06-01T12:00:00Z",
+      "status": "active",
+      "is_manager": true,
+      "employee_id": "EMP001234"
+    },
+    "organization": {
+      "id": "org_abc123",
+      "name": "Acme Corporation",
+      "domain": "acme.com",
+      "settings": {
+        "timezone": "America/Los_Angeles",
+        "business_hours": {
+          "start": "09:00",
+          "end": "17:00"
+        }
+      }
+    }
+  },
+  "meta": {
+    "request_id": "req_abc123",
+    "timestamp": "2024-06-02T15:30:00Z",
+    "api_version": "v2",
+    "response_time_ms": 145,
+    "rate_limit": {
+      "remaining": 4999,
+      "reset_at": "2024-06-02T16:00:00Z"
+    }
+  },
+  "success": true,
+  "message": "User retrieved successfully"
+}

@@ -1,3 +1,59 @@
+Metadata-Version: 2.4
+Name: moveworks-yaml-wizard
+Version: 1.0.0
+Summary: A Python wizard for creating Moveworks Compound Action YAML files
+Home-page: https://github.com/moveworks/yaml-wizard
+Author: Moveworks Development Team
+Author-email: Moveworks Development Team <dev@moveworks.com>
+License: MIT
+Project-URL: Homepage, https://github.com/moveworks/yaml-wizard
+Project-URL: Documentation, https://github.com/moveworks/yaml-wizard/blob/main/README.md
+Project-URL: Repository, https://github.com/moveworks/yaml-wizard.git
+Project-URL: Bug Reports, https://github.com/moveworks/yaml-wizard/issues
+Keywords: moveworks,yaml,wizard,compound-actions,automation,workflow,cli,code-generation
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Operating System :: OS Independent
+Classifier: Environment :: Console
+Classifier: Environment :: X11 Applications
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: typing-extensions>=4.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Provides-Extra: gui
+Requires-Dist: customtkinter>=5.0.0; extra == "gui"
+Provides-Extra: all
+Requires-Dist: pytest>=7.0.0; extra == "all"
+Requires-Dist: pytest-cov>=4.0.0; extra == "all"
+Requires-Dist: black>=23.0.0; extra == "all"
+Requires-Dist: flake8>=6.0.0; extra == "all"
+Requires-Dist: mypy>=1.0.0; extra == "all"
+Requires-Dist: customtkinter>=5.0.0; extra == "all"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: platform
+Dynamic: requires-python
+
 # Moveworks YAML Wizard for Compound Actions
 
 A Python application that provides a user-friendly wizard interface for creating valid Moveworks Compound Action YAML files, specifically designed for use within "Action Activities" in the post-April 2025 Plugin architecture.
@@ -19,8 +75,6 @@ A Python application that provides a user-friendly wizard interface for creating
 - ✅ **Performance testing** and stress testing capabilities
 - ✅ **Real-world workflow examples** and deployment scenarios
 - ✅ **Production deployment** ready for PyPI distribution
-- ✅ **JSON analysis for HTTP connectors** to suggest variables from test results
-- ✅ **Fully functional GUI** with working buttons and JSON analysis integration
 
 ### Complete Feature Set:
 - ✅ **Enhanced wizard logic** with 5 step types (action, script, switch, return, raise)
@@ -129,18 +183,10 @@ moveworks-wizard wizard --output my_compound_action.yaml
 moveworks-wizard --help
 ```
 
-### GUI Interface (Fully Functional!)
+### GUI Interface (Phase 4+)
 ```bash
-# Launch the graphical interface with all working buttons
+# Launch the graphical interface
 moveworks-wizard gui
-
-# Features:
-# • JSON analysis integration
-# • Working input argument management
-# • Functional step creation/editing
-# • Real-time YAML preview
-# • Template library access
-# • AI suggestions integration
 ```
 
 ### Template Management (Phase 4+)
@@ -162,20 +208,6 @@ moveworks-wizard suggest "create a user and send notification"
 
 # Validate Bender expressions
 moveworks-wizard validate-bender "RENDER('Hello {{name}}', data)"
-```
-
-### JSON Analysis for HTTP Connectors (New!)
-```bash
-# Analyze JSON from HTTP connector test results
-moveworks-wizard analyze-json --file response.json --source user_api
-
-# Interactive JSON analysis
-moveworks-wizard analyze-json
-# Then paste your JSON data
-
-# Use in wizard for variable suggestions
-moveworks-wizard wizard
-# Choose "yes" when asked about JSON analysis
 ```
 
 ### Legacy Usage (Development)

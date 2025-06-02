@@ -32,6 +32,34 @@ A compound action focused on custom data processing using APIthon scripts.
 - Complex data structures
 - Input argument mapping
 
+## JSON Analysis Examples
+
+### sample_http_response.json
+A sample HTTP connector response that demonstrates the JSON analysis feature. This file contains:
+- User information with nested objects
+- Organization data
+- Metadata and API response information
+- Various data types (strings, numbers, booleans, arrays, objects)
+
+**Usage:**
+```bash
+# Analyze the sample JSON file
+moveworks-wizard analyze-json --file examples/sample_http_response.json --source user_api
+
+# Use in interactive wizard
+moveworks-wizard wizard
+# When prompted for input arguments, choose "yes" for JSON analysis
+# Then select option 2 to load from file and provide the path: examples/sample_http_response.json
+```
+
+**Expected Variable Suggestions:**
+- `user_api.data.user.id` - User identifier
+- `user_api.data.user.email` - User email address
+- `user_api.data.user.department` - User department
+- `user_api.data.user.manager.id` - Manager identifier
+- `user_api.data.organization.id` - Organization identifier
+- And many more...
+
 ## Usage in Action Activities
 
 These YAML files are designed to be used within Moveworks Action Activities in the post-April 2025 Plugin architecture. To use them:

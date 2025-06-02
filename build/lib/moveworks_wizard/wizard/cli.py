@@ -5,7 +5,6 @@ This module provides the main CLI entry point and wizard flow logic.
 """
 
 import click
-import json
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 
@@ -19,7 +18,6 @@ from ..catalog import builtin_catalog
 from ..templates.template_library import template_library
 from ..ai.action_suggester import action_suggester
 from ..bender.bender_assistant import bender_assistant
-from ..utils.json_analyzer import JSONAnalyzer, VariableSuggestion
 
 
 class CompoundActionWizard:
@@ -99,12 +97,6 @@ class CompoundActionWizard:
         click.echo("  • data.ticket_id")
         click.echo()
 
-        # Offer JSON analysis option
-        if click.confirm("Do you have JSON test results from an HTTP connector to analyze?"):
-            json_suggestions = self._analyze_json_input()
-            if json_suggestions:
-                return self._select_from_json_suggestions(json_suggestions)
-
         input_args = {}
 
         while True:
@@ -129,172 +121,6 @@ class CompoundActionWizard:
 
         if input_args:
             click.echo(f"\n✅ Added {len(input_args)} input arguments")
-
-        return input_args
-
-    def _analyze_json_input(self) -> Optional[List[VariableSuggestion]]:
-        """Analyze JSON input from HTTP connector test results."""
-        click.echo("\n🔍 JSON Analysis for Variable Suggestions")
-        click.echo("This will analyze your HTTP connector test results to suggest variables.")
-        click.echo()
-
-        # Get JSON input method
-        input_method = click.prompt(
-            "How would you like to provide the JSON?\n"
-            "1. Paste JSON directly\n"
-            "2. Load from file\n"
-            "Choose (1-2)",
-            type=click.Choice(['1', '2'])
-        )
-
-        json_data = None
-        source_name = "http_response"
-
-        if input_method == '1':
-            click.echo("\nPaste your JSON data (press Ctrl+D when finished):")
-            json_lines = []
-            try:
-                while True:
-                    line = input()
-                    json_lines.append(line)
-            except EOFError:
-                json_data = '\n'.join(json_lines)
-
-            source_name = click.prompt("Enter a name for this data source", default="http_response")
-
-        elif input_method == '2':
-            file_path = click.prompt("Enter path to JSON file", type=click.Path(exists=True))
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    json_data = f.read()
-                source_name = Path(file_path).stem
-            except Exception as e:
-                click.echo(f"❌ Error reading file: {e}")
-                return None
-
-        if not json_data or not json_data.strip():
-            click.echo("❌ No JSON data provided")
-            return None
-
-        # Analyze the JSON
-        try:
-            analyzer = JSONAnalyzer()
-            suggestions = analyzer.analyze_json(json_data, source_name)
-
-            if not suggestions:
-                click.echo("❌ No variable suggestions found in the JSON data")
-                return None
-
-            click.echo(f"\n✅ Found {len(suggestions)} variable suggestions!")
-
-            # Display top suggestions
-            display_text = analyzer.format_suggestions_for_display(suggestions, max_suggestions=10)
-            click.echo(display_text)
-
-            return suggestions
-
-        except json.JSONDecodeError as e:
-            click.echo(f"❌ Invalid JSON data: {e}")
-            return None
-        except Exception as e:
-            click.echo(f"❌ Error analyzing JSON: {e}")
-            return None
-
-    def _select_from_json_suggestions(self, suggestions: List[VariableSuggestion]) -> Dict[str, Any]:
-        """Allow user to select variables from JSON analysis suggestions."""
-        click.echo("\n📋 Select Variables for Input Arguments")
-        click.echo("Choose which variables you want to use as input arguments:")
-        click.echo()
-
-        input_args = {}
-
-        while True:
-            # Show available suggestions
-            click.echo("Available suggestions:")
-            for i, suggestion in enumerate(suggestions[:15], 1):
-                click.echo(f"{i:2d}. {suggestion.path} ({suggestion.data_type}) - {suggestion.description}")
-
-            if len(suggestions) > 15:
-                click.echo(f"    ... and {len(suggestions) - 15} more")
-
-            click.echo("\nOptions:")
-            click.echo("  • Enter number to select a suggestion")
-            click.echo("  • Enter 'more' to see all suggestions")
-            click.echo("  • Enter 'done' to finish")
-            click.echo("  • Enter 'manual' to add arguments manually")
-
-            choice = click.prompt("Your choice", type=str)
-
-            if choice.lower() == 'done':
-                break
-            elif choice.lower() == 'manual':
-                # Fall back to manual input
-                manual_args = self._add_manual_input_arguments()
-                input_args.update(manual_args)
-                break
-            elif choice.lower() == 'more':
-                # Show all suggestions
-                analyzer = JSONAnalyzer()
-                analyzer.suggestions = suggestions
-                display_text = analyzer.format_suggestions_for_display(suggestions, max_suggestions=50)
-                click.echo(f"\n{display_text}")
-                continue
-
-            # Try to parse as number
-            try:
-                choice_num = int(choice)
-                if 1 <= choice_num <= len(suggestions):
-                    suggestion = suggestions[choice_num - 1]
-
-                    # Suggest argument name based on path
-                    suggested_name = suggestion.path.split('.')[-1].lower()
-                    arg_name = click.prompt(f"Argument name for '{suggestion.path}'", default=suggested_name)
-
-                    # Use the bender expression as the value
-                    input_args[arg_name] = suggestion.bender_expression
-
-                    click.echo(f"✅ Added: {arg_name} = {suggestion.bender_expression}")
-                    click.echo(f"   Description: {suggestion.description}")
-                    click.echo(f"   Example usage: {suggestion.example_usage}")
-                    click.echo()
-
-                    # Remove from suggestions to avoid duplicates
-                    suggestions.pop(choice_num - 1)
-
-                else:
-                    click.echo("❌ Invalid selection number")
-            except ValueError:
-                click.echo("❌ Invalid input. Enter a number, 'more', 'manual', or 'done'")
-
-        if input_args:
-            click.echo(f"\n✅ Added {len(input_args)} input arguments from JSON analysis")
-
-        return input_args
-
-    def _add_manual_input_arguments(self) -> Dict[str, Any]:
-        """Add input arguments manually (fallback method)."""
-        click.echo("\n📝 Manual Input Arguments")
-        input_args = {}
-
-        while True:
-            arg_name = click.prompt("Enter argument name (or 'done' to finish)", type=str)
-            if arg_name.lower() == 'done':
-                break
-
-            # Validate argument name
-            if not arg_name.replace('_', '').replace('-', '').isalnum():
-                click.echo("❌ Invalid argument name. Use alphanumeric characters, underscores, or hyphens.")
-                continue
-
-            arg_value = click.prompt(f"Enter value for '{arg_name}' (Bender syntax)", type=str)
-
-            # Basic validation for Bender syntax
-            if not (arg_value.startswith('data.') or arg_value.startswith('meta_info.') or
-                   arg_value.startswith('constants.') or arg_value.startswith('"')):
-                click.echo("⚠️  Warning: Value should typically start with 'data.', 'meta_info.', 'constants.', or be a quoted string")
-
-            input_args[arg_name] = arg_value
-            click.echo(f"✅ Added: {arg_name} = {arg_value}")
 
         return input_args
 
@@ -536,13 +362,6 @@ class CompoundActionWizard:
     def _prompt_input_args_for_step(self, context: str = "input arguments") -> Dict[str, Any]:
         """Prompt for input arguments for a specific step."""
         click.echo(f"\nEnter {context}:")
-
-        # Offer JSON analysis for step arguments too
-        if click.confirm("Use JSON analysis to help with variable selection?"):
-            json_suggestions = self._analyze_json_input()
-            if json_suggestions:
-                return self._select_from_json_suggestions(json_suggestions)
-
         input_args = {}
 
         while True:
@@ -1058,75 +877,6 @@ def validate_bender(expression: str):
 
     if result['functions_used']:
         click.echo(f"\n🔧 Functions used: {', '.join(result['functions_used'])}")
-
-
-@cli.command()
-@click.option('--file', '-f', 'json_file', type=click.Path(exists=True), help='JSON file to analyze')
-@click.option('--source', '-s', default='http_response', help='Name for the data source')
-@click.option('--output', '-o', type=click.Path(), help='Output file for suggestions')
-def analyze_json(json_file, source, output):
-    """Analyze JSON from HTTP connector test results to suggest variables."""
-    click.echo("🔍 JSON Analysis for Variable Suggestions")
-    click.echo("This analyzes HTTP connector test results to suggest variables for Compound Actions.")
-    click.echo()
-
-    json_data = None
-
-    if json_file:
-        # Load from file
-        try:
-            with open(json_file, 'r', encoding='utf-8') as f:
-                json_data = f.read()
-            click.echo(f"📁 Loaded JSON from: {json_file}")
-        except Exception as e:
-            click.echo(f"❌ Error reading file: {e}")
-            return
-    else:
-        # Get JSON input interactively
-        click.echo("Paste your JSON data (press Ctrl+D when finished):")
-        json_lines = []
-        try:
-            while True:
-                line = input()
-                json_lines.append(line)
-        except EOFError:
-            json_data = '\n'.join(json_lines)
-
-        if not json_data.strip():
-            click.echo("❌ No JSON data provided")
-            return
-
-    # Analyze the JSON
-    try:
-        analyzer = JSONAnalyzer()
-        suggestions = analyzer.analyze_json(json_data, source)
-
-        if not suggestions:
-            click.echo("❌ No variable suggestions found in the JSON data")
-            return
-
-        click.echo(f"\n✅ Found {len(suggestions)} variable suggestions!")
-
-        # Display suggestions
-        display_text = analyzer.format_suggestions_for_display(suggestions)
-        click.echo(display_text)
-
-        # Save to file if requested
-        if output:
-            analyzer.export_suggestions_to_json(Path(output))
-            click.echo(f"\n💾 Suggestions saved to: {output}")
-
-        # Show usage tips
-        click.echo("\n💡 Usage Tips:")
-        click.echo("• Use these suggestions when creating Compound Action input arguments")
-        click.echo("• The 'Bender' column shows the exact expression to use")
-        click.echo("• The 'Example' column shows how to use the variable in steps")
-        click.echo("• Run 'moveworks-wizard wizard' to create a Compound Action with these variables")
-
-    except json.JSONDecodeError as e:
-        click.echo(f"❌ Invalid JSON data: {e}")
-    except Exception as e:
-        click.echo(f"❌ Error analyzing JSON: {e}")
 
 
 if __name__ == '__main__':

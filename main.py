@@ -13,7 +13,7 @@ from pathlib import Path
 src_path = Path(__file__).parent / "src"
 sys.path.insert(0, str(src_path))
 
-from moveworks_wizard.wizard.cli import main
+from moveworks_wizard.wizard.cli import cli
 
 if __name__ == "__main__":
-    main()
+    cli()
