@@ -898,10 +898,31 @@ class JSONSuggestionsDialog:
 
         # Selection help
         help_text = ttk.Label(main_frame,
-                            text="💡 Tip: Hold Ctrl to select multiple items, or use the selection buttons below",
+                            text="💡 Tip: Hold Ctrl to select multiple items, or use the Quick Selection buttons",
                             wraplength=750,
                             foreground="blue")
         help_text.pack(anchor=tk.W, pady=(0, 10))
+
+        # Quick Selection buttons - moved to top
+        selection_frame = ttk.LabelFrame(main_frame, text="Quick Selection", padding=10)
+        selection_frame.pack(fill=tk.X, pady=(0, 10))
+
+        ttk.Button(selection_frame, text="Select All", command=self._select_all).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(selection_frame, text="Select None", command=self._select_none).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(selection_frame, text="Select Top 5", command=self._select_top_5).pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Button(selection_frame, text="Select Common", command=self._select_common).pack(side=tk.LEFT)
+
+        # Action buttons - pack at bottom FIRST to reserve space
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
+
+        # Add a label to show selection count
+        self.selection_label = ttk.Label(button_frame, text="No items selected")
+        self.selection_label.pack(side=tk.LEFT)
+
+        ttk.Button(button_frame, text="Cancel", command=self._cancel_clicked).pack(side=tk.RIGHT)
+        self.add_button = ttk.Button(button_frame, text="Add Selected (0)", command=self._add_selected)
+        self.add_button.pack(side=tk.RIGHT, padx=(5, 5))
 
         # Create treeview for suggestions with multiple selection
         columns = ('Type', 'Description', 'Bender Expression')
@@ -922,7 +943,7 @@ class JSONSuggestionsDialog:
         scrollbar = ttk.Scrollbar(main_frame, orient=tk.VERTICAL, command=self.suggestions_tree.yview)
         self.suggestions_tree.configure(yscrollcommand=scrollbar.set)
 
-        # Pack treeview and scrollbar - this should be after buttons are packed
+        # Pack treeview and scrollbar - after buttons are packed
         tree_frame = ttk.Frame(main_frame)
         tree_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
@@ -936,27 +957,6 @@ class JSONSuggestionsDialog:
                                        values=(suggestion.data_type,
                                              suggestion.description,
                                              suggestion.bender_expression))
-
-        # Action buttons - pack at bottom FIRST
-        button_frame = ttk.Frame(main_frame)
-        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
-
-        # Add a label to show selection count
-        self.selection_label = ttk.Label(button_frame, text="No items selected")
-        self.selection_label.pack(side=tk.LEFT)
-
-        ttk.Button(button_frame, text="Cancel", command=self._cancel_clicked).pack(side=tk.RIGHT)
-        self.add_button = ttk.Button(button_frame, text="Add Selected (0)", command=self._add_selected)
-        self.add_button.pack(side=tk.RIGHT, padx=(5, 5))
-
-        # Selection buttons
-        selection_frame = ttk.LabelFrame(main_frame, text="Quick Selection", padding=10)
-        selection_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(0, 10))
-
-        ttk.Button(selection_frame, text="Select All", command=self._select_all).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(selection_frame, text="Select None", command=self._select_none).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(selection_frame, text="Select Top 5", command=self._select_top_5).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(selection_frame, text="Select Common", command=self._select_common).pack(side=tk.LEFT)
 
         # Bind selection change event
         self.suggestions_tree.bind('<<TreeviewSelect>>', self._on_selection_change)
@@ -1090,26 +1090,58 @@ class StepDialog:
         self.step_type = ttk.Combobox(main_frame, values=["Action", "Script", "Return"], state="readonly")
         self.step_type.grid(row=0, column=1, sticky=tk.W+tk.E, pady=5)
         self.step_type.set("Action")
+        self.step_type.bind("<<ComboboxSelected>>", self._on_step_type_changed)
 
-        # Output key
+        # Output key with auto-fill button
+        output_frame = ttk.Frame(main_frame)
+        output_frame.grid(row=1, column=1, sticky=tk.W+tk.E, pady=5)
+        output_frame.columnconfigure(0, weight=1)
+
         ttk.Label(main_frame, text="Output Key:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        self.output_key_entry = ttk.Entry(main_frame, width=40)
-        self.output_key_entry.grid(row=1, column=1, sticky=tk.W+tk.E, pady=5)
+        self.output_key_entry = ttk.Entry(output_frame, width=30)
+        self.output_key_entry.grid(row=0, column=0, sticky=tk.W+tk.E, padx=(0, 5))
+        ttk.Button(output_frame, text="Auto", width=6,
+                  command=self._auto_fill_output_key).grid(row=0, column=1)
 
-        # Action name (for action steps)
+        # Action name with suggestions
+        action_frame = ttk.Frame(main_frame)
+        action_frame.grid(row=2, column=1, sticky=tk.W+tk.E, pady=5)
+        action_frame.columnconfigure(0, weight=1)
+
         ttk.Label(main_frame, text="Action Name:").grid(row=2, column=0, sticky=tk.W, pady=5)
-        self.action_name_entry = ttk.Entry(main_frame, width=40)
-        self.action_name_entry.grid(row=2, column=1, sticky=tk.W+tk.E, pady=5)
+        self.action_name_entry = ttk.Combobox(action_frame, width=30)
+        self.action_name_entry.grid(row=0, column=0, sticky=tk.W+tk.E, padx=(0, 5))
+        self.action_name_entry.bind("<KeyRelease>", self._on_action_name_changed)
+        ttk.Button(action_frame, text="Suggest", width=6,
+                  command=self._suggest_action_names).grid(row=0, column=1)
 
-        # Code (for script steps)
+        # Code (for script steps) with templates
+        code_frame = ttk.Frame(main_frame)
+        code_frame.grid(row=3, column=1, sticky=tk.W+tk.E+tk.N+tk.S, pady=5)
+        code_frame.columnconfigure(0, weight=1)
+        code_frame.rowconfigure(0, weight=1)
+
         ttk.Label(main_frame, text="Code:").grid(row=3, column=0, sticky=tk.W+tk.N, pady=5)
-        self.code_text = scrolledtext.ScrolledText(main_frame, height=8, width=50)
-        self.code_text.grid(row=3, column=1, sticky=tk.W+tk.E+tk.N+tk.S, pady=5)
+        self.code_text = scrolledtext.ScrolledText(code_frame, height=6, width=40)
+        self.code_text.grid(row=0, column=0, sticky=tk.W+tk.E+tk.N+tk.S, padx=(0, 5))
 
-        # Value (for return steps)
+        code_buttons_frame = ttk.Frame(code_frame)
+        code_buttons_frame.grid(row=0, column=1, sticky=tk.N)
+        ttk.Button(code_buttons_frame, text="Template", width=8,
+                  command=self._insert_code_template).pack(pady=2)
+        ttk.Button(code_buttons_frame, text="Clear", width=8,
+                  command=self._clear_code).pack(pady=2)
+
+        # Value (for return steps) with suggestions
+        value_frame = ttk.Frame(main_frame)
+        value_frame.grid(row=4, column=1, sticky=tk.W+tk.E, pady=5)
+        value_frame.columnconfigure(0, weight=1)
+
         ttk.Label(main_frame, text="Return Value:").grid(row=4, column=0, sticky=tk.W, pady=5)
-        self.value_entry = ttk.Entry(main_frame, width=40)
-        self.value_entry.grid(row=4, column=1, sticky=tk.W+tk.E, pady=5)
+        self.value_entry = ttk.Combobox(value_frame, width=30)
+        self.value_entry.grid(row=0, column=0, sticky=tk.W+tk.E, padx=(0, 5))
+        ttk.Button(value_frame, text="Suggest", width=6,
+                  command=self._suggest_return_values).grid(row=0, column=1)
 
         # Buttons
         button_frame = ttk.Frame(main_frame)
@@ -1165,8 +1197,7 @@ class StepDialog:
                 from ..models.actions import ActionStep
                 step = ActionStep(
                     action_name=action_name,
-                    output_key=output_key,
-                    input_args={}
+                    output_key=output_key
                 )
 
             elif step_type == "Script":
@@ -1202,6 +1233,161 @@ class StepDialog:
 
     def _cancel_clicked(self):
         self.dialog.destroy()
+
+    def _on_step_type_changed(self, event=None):
+        """Handle step type change to auto-fill output key."""
+        self._auto_fill_output_key()
+
+    def _auto_fill_output_key(self):
+        """Auto-generate output key based on step type and action name."""
+        step_type = self.step_type.get()
+
+        if step_type == "Action":
+            action_name = self.action_name_entry.get().strip()
+            if action_name:
+                # Generate output key from action name
+                # Remove 'mw.' prefix if present
+                clean_name = action_name.replace('mw.', '')
+                # Convert to snake_case and add suffix
+                output_key = clean_name.lower().replace('.', '_').replace('-', '_') + "_result"
+                self.output_key_entry.delete(0, tk.END)
+                self.output_key_entry.insert(0, output_key)
+            else:
+                # Default for action steps
+                self.output_key_entry.delete(0, tk.END)
+                self.output_key_entry.insert(0, "action_result")
+        elif step_type == "Script":
+            self.output_key_entry.delete(0, tk.END)
+            self.output_key_entry.insert(0, "script_result")
+        elif step_type == "Return":
+            self.output_key_entry.delete(0, tk.END)
+            self.output_key_entry.insert(0, "final_result")
+
+    def _on_action_name_changed(self, event=None):
+        """Handle action name change to update suggestions and output key."""
+        # Auto-update output key when action name changes
+        self._auto_fill_output_key()
+
+        # Update action name suggestions
+        current_text = self.action_name_entry.get()
+        if len(current_text) >= 2:  # Start suggesting after 2 characters
+            suggestions = self._get_action_name_suggestions(current_text)
+            self.action_name_entry['values'] = suggestions
+
+    def _suggest_action_names(self):
+        """Show action name suggestions."""
+        try:
+            from ..catalog.builtin_actions import builtin_catalog
+
+            # Get all built-in actions
+            builtin_actions = []
+            for category, actions in builtin_catalog.get_all_actions().items():
+                for action in actions:
+                    builtin_actions.append(action.action_name)
+        except ImportError:
+            builtin_actions = []
+
+        # Common custom action patterns
+        common_patterns = [
+            "fetch_user_details",
+            "create_ticket",
+            "send_notification",
+            "update_database",
+            "validate_input",
+            "process_data",
+            "generate_report",
+            "check_permissions"
+        ]
+
+        all_suggestions = builtin_actions + common_patterns
+        self.action_name_entry['values'] = all_suggestions
+        self.action_name_entry.event_generate('<Button-1>')
+
+    def _get_action_name_suggestions(self, partial_text):
+        """Get action name suggestions based on partial text."""
+        suggestions = []
+        partial_lower = partial_text.lower()
+
+        try:
+            from ..catalog.builtin_actions import builtin_catalog
+            # Get matching built-in actions
+            for category, actions in builtin_catalog.get_all_actions().items():
+                for action in actions:
+                    if partial_lower in action.action_name.lower():
+                        suggestions.append(action.action_name)
+        except ImportError:
+            pass
+
+        # Add common patterns that match
+        common_patterns = [
+            "fetch_user_details", "create_ticket", "send_notification",
+            "update_database", "validate_input", "process_data"
+        ]
+
+        for pattern in common_patterns:
+            if partial_lower in pattern.lower():
+                suggestions.append(pattern)
+
+        return suggestions[:10]  # Limit to 10 suggestions
+
+    def _insert_code_template(self):
+        """Insert a code template into the script area."""
+        templates = {
+            "Basic Processing": "# Process the input data\nresult = data.input_field\nreturn result",
+            "Data Validation": "# Validate input data\nif not data.required_field:\n    raise ValueError('Required field is missing')\nreturn {'valid': True}",
+            "List Processing": "# Process a list of items\nresults = []\nfor item in data.items:\n    processed = item.upper()  # Example processing\n    results.append(processed)\nreturn results",
+            "API Response": "# Process API response\nif response.status_code == 200:\n    return response.data\nelse:\n    raise Exception(f'API error: {response.status_code}')",
+            "String Manipulation": "# String processing example\ntext = data.input_text\nprocessed = text.strip().lower().replace(' ', '_')\nreturn {'processed_text': processed}"
+        }
+
+        # Create a simple selection dialog
+        template_dialog = tk.Toplevel(self.dialog)
+        template_dialog.title("Select Code Template")
+        template_dialog.geometry("400x300")
+        template_dialog.transient(self.dialog)
+        template_dialog.grab_set()
+
+        # Template list
+        listbox = tk.Listbox(template_dialog)
+        listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        for template_name in templates.keys():
+            listbox.insert(tk.END, template_name)
+
+        def insert_selected():
+            selection = listbox.curselection()
+            if selection:
+                template_name = listbox.get(selection[0])
+                template_code = templates[template_name]
+                self.code_text.delete("1.0", tk.END)
+                self.code_text.insert("1.0", template_code)
+                template_dialog.destroy()
+
+        # Buttons
+        button_frame = ttk.Frame(template_dialog)
+        button_frame.pack(fill=tk.X, padx=10, pady=5)
+        ttk.Button(button_frame, text="Insert", command=insert_selected).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Cancel", command=template_dialog.destroy).pack(side=tk.LEFT, padx=5)
+
+    def _clear_code(self):
+        """Clear the code text area."""
+        self.code_text.delete("1.0", tk.END)
+
+    def _suggest_return_values(self):
+        """Suggest common return value patterns."""
+        suggestions = [
+            "data.processed_result",
+            "{'status': 'success', 'data': data.result}",
+            "data.output_field",
+            "{'message': 'Operation completed'}",
+            "data.final_value",
+            "{'result': data.computed_value}",
+            "data.response",
+            "{'success': True, 'value': data.result}"
+        ]
+
+        self.value_entry['values'] = suggestions
+        self.value_entry.event_generate('<Button-1>')
 
 
 def main():

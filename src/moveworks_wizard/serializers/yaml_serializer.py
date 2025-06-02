@@ -52,9 +52,28 @@ class MoveworksYamlDumper(yaml.SafeDumper):
             end += 1
 
     def represent_str(self, data):
-        """Custom string representation for multi-line strings."""
+        """Custom string representation for multi-line strings and special characters."""
         if '\n' in data:
             return self.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+        # Quote strings that start with special characters or contain problematic patterns
+        needs_quoting = (
+            data.startswith('@') or
+            data.startswith('!') or
+            data.startswith('&') or
+            data.startswith('*') or
+            data.startswith('{') or
+            data.startswith('[') or
+            data.startswith('|') or
+            data.startswith('>') or
+            ':' in data or
+            '#' in data or
+            data.strip() != data  # has leading/trailing whitespace
+        )
+
+        if needs_quoting:
+            return self.represent_scalar('tag:yaml.org,2002:str', data, style='"')
+
         return self.represent_scalar('tag:yaml.org,2002:str', data)
 
 
@@ -100,7 +119,9 @@ class YamlSerializer:
             sort_keys=sort_keys,
             indent=2,
             width=120,
-            allow_unicode=True
+            allow_unicode=True,
+            explicit_start=False,
+            explicit_end=False
         )
         
         return yaml_str

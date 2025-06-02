@@ -96,12 +96,14 @@ class ForStep(BaseStep):
     @classmethod
     def validate_variable_names(cls, v):
         """Validate variable names."""
+        import re
+
         if not v.strip():
             raise ValueError("Variable names cannot be empty")
 
-        # Basic variable name validation
-        if not v.replace('_', '').isalnum():
-            raise ValueError("Variable names must be alphanumeric with underscores")
+        # Variable names should be valid - must start with letter and contain only letters, numbers, underscores, hyphens
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*$', v.strip()):
+            raise ValueError("Variable names must start with a letter and contain only letters, numbers, underscores, and hyphens")
 
         return v.strip()
     

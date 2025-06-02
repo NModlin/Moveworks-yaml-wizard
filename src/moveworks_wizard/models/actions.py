@@ -46,12 +46,14 @@ class ActionStep(BaseStep):
     @classmethod
     def validate_output_key(cls, v):
         """Validate output key format."""
+        import re
+
         if not v.strip():
             raise ValueError("Output key cannot be empty")
 
-        # Output key should be a valid variable name
-        if not v.replace('_', '').replace('-', '').isalnum():
-            raise ValueError("Output key must be alphanumeric with underscores/hyphens")
+        # Output key should be a valid variable name - must start with letter and contain only letters, numbers, underscores, hyphens
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*$', v.strip()):
+            raise ValueError("Output key must start with a letter and contain only letters, numbers, underscores, and hyphens")
 
         return v.strip()
     
@@ -69,17 +71,17 @@ class ActionStep(BaseStep):
             "action_name": self.action_name,
             "output_key": self.output_key
         }
-        
-        # Add optional fields if present
-        if self.input_args:
-            action_dict["input_args"] = self.input_args
-        
+
+        # Always include input_args (even if empty) to match expected format
+        action_dict["input_args"] = self.input_args or {}
+
+        # Add other optional fields if present
         if self.delay_config:
             action_dict["delay_config"] = self.delay_config.to_dict()
-        
+
         if self.progress_updates:
             action_dict["progress_updates"] = self.progress_updates.to_dict()
-        
+
         return {"action": action_dict}
 
 
@@ -110,12 +112,14 @@ class ScriptStep(BaseStep):
     @classmethod
     def validate_output_key(cls, v):
         """Validate output key format."""
+        import re
+
         if not v.strip():
             raise ValueError("Output key cannot be empty")
 
-        # Output key should be a valid variable name
-        if not v.replace('_', '').replace('-', '').isalnum():
-            raise ValueError("Output key must be alphanumeric with underscores/hyphens")
+        # Output key should be a valid variable name - must start with letter and contain only letters, numbers, underscores, hyphens
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*$', v.strip()):
+            raise ValueError("Output key must start with a letter and contain only letters, numbers, underscores, and hyphens")
 
         return v.strip()
     

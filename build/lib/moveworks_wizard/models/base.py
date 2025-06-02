@@ -70,17 +70,13 @@ class CompoundAction(BaseModel):
     def to_yaml_dict(self) -> Dict[str, Any]:
         """
         Convert this CompoundAction to a dictionary suitable for YAML serialization.
-        
+
         Returns:
             Dictionary representing the complete Compound Action YAML structure
         """
         result = {}
-        
-        # Add input_args if present
-        if self.input_args:
-            result['input_args'] = self.input_args
-        
-        # Handle single step vs multiple steps
+
+        # Handle single step vs multiple steps FIRST (correct Moveworks order)
         if self.single_step:
             # For single step, add it directly to the root level
             step_dict = self.single_step.to_yaml_dict()
@@ -88,7 +84,11 @@ class CompoundAction(BaseModel):
         elif self.steps:
             # For multiple steps, wrap in steps array
             result['steps'] = [step.to_yaml_dict() for step in self.steps]
-        
+
+        # Add input_args AFTER steps if present
+        if self.input_args:
+            result['input_args'] = self.input_args
+
         return result
     
     def add_step(self, step: BaseStep) -> None:

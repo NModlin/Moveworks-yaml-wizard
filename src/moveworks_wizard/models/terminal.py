@@ -51,12 +51,14 @@ class RaiseStep(BaseStep):
     @classmethod
     def validate_output_key(cls, v):
         """Validate output key format."""
+        import re
+
         if not v.strip():
             raise ValueError("Output key cannot be empty")
 
-        # Output key should be a valid variable name
-        if not v.replace('_', '').replace('-', '').isalnum():
-            raise ValueError("Output key must be alphanumeric with underscores/hyphens")
+        # Output key should be a valid variable name - must start with letter and contain only letters, numbers, underscores, hyphens
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*$', v.strip()):
+            raise ValueError("Output key must start with a letter and contain only letters, numbers, underscores, and hyphens")
 
         return v.strip()
 
