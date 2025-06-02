@@ -1,0 +1,10 @@
+input_args:
+  number_list: data.input_numbers
+script:
+  code: "# Calculate statistics from a list of numbers\nsum_numbers = sum(numbers)\ncount_numbers = len(numbers)\naverage\
+    \ = sum_numbers / count_numbers if count_numbers > 0 else 0\n\nstats = {\n    'sum': sum_numbers,\n    'count': count_numbers,\
+    \ \n    'average': average,\n    'max': max(numbers) if numbers else 0,\n    'min': min(numbers) if numbers else 0\n}\n\
+    \nreturn stats"
+  output_key: statistics
+  input_args:
+    numbers: data.number_list

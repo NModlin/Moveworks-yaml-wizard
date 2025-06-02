@@ -1,0 +1,273 @@
+Project: Moveworks YAML Wizard for Compound Actions (Post-April 2025 Focus)
+Project Goal: To develop a Python application with a user-friendly wizard interface that guides users through creating valid Moveworks Compound Action YAML, specifically for use within "Action Activities" in the post-April 2025 Plugin architecture. The wizard will leverage AI/guided logic to ensure syntactic correctness and adherence to Moveworks best practices based on the provided documentation.
+
+Phase 1: Discovery & Foundational Planning (1-2 Weeks) - COMPLETED ✅
+Objective: Deeply understand requirements for post-April 2025 Compound Actions, define precise scope, and choose the core technical approach.
+
+PHASE 1 STATUS: COMPLETED ✅
+- Project structure setup: COMPLETED ✅
+- YAML schema analysis: COMPLETED ✅
+- MVP feature definition: COMPLETED ✅
+- Technical architecture design: COMPLETED ✅
+- Foundation code implementation: COMPLETED ✅
+
+DELIVERABLES COMPLETED:
+✅ Complete project structure with src/moveworks_wizard/
+✅ Pydantic data models for all YAML constructs
+✅ YAML serialization framework
+✅ Basic CLI wizard interface
+✅ Comprehensive documentation analysis
+✅ Phase 1 analysis report (docs/Phase1_Analysis.md)
+✅ Unit test framework setup
+✅ Requirements.txt with core dependencies
+
+PHASE 2 STATUS: COMPLETED ✅
+
+PHASE 2 ACHIEVEMENTS:
+🧙 Enhanced wizard logic with complete step creation flows (5 step types)
+� Built-in action catalog with 7 actions across 5 categories
+✅ Advanced validation framework with comprehensive input validation
+🎯 Improved user experience with guidance, examples, and error handling
+🧪 Comprehensive testing with 19 new test cases (33 total)
+📄 Complex workflow support with conditional logic and error handling
+🔍 Smart action discovery with search and categorization
+💡 Real-time validation with immediate feedback and suggestions
+
+GENERATED EXAMPLES:
+- examples/generated/simple_action.yaml (single action with progress updates)
+- examples/generated/multi_step.yaml (3-step workflow with data flow)
+- examples/generated/script_example.yaml (complex APIthon script)
+- examples/generated/phase2_enhanced_workflow.yaml (complex multi-step with conditionals)
+
+READY FOR PHASE 3: Advanced Features & UI/AI Enhancement
+
+Requirement Deep Dive & Scope Definition:
+
+Analyze Documentation (Post-April 2025 Lens): Thoroughly review all provided documents (Moveworks Compound Action Creation, APIthon.md, compound-action-syntax-reference.md, data-handling.md, expression-types.md, moveworks-bender-language-reference.md).
+
+Focus on the role of Compound Actions as components within "Action Activities" in Plugins. [cite: 1, Moveworks Compound Action Creation]
+
+Identify all YAML constructs, their mandatory and optional fields, data types, and interdependencies relevant to this context.
+
+Pay special attention to nuances like code: | for APIthon [cite: 1, APIthon.md; 10, Moveworks Compound Action Creation], DSL escaping for constants [cite: 10, Moveworks Compound Action Creation], the different action types (HTTP, Script, Built-in), and control flow constructs [cite: 1, compound-action-syntax-reference.md; 12, Moveworks Compound Action Creation].
+
+Note that Compound Actions are workflow-focused and used for determined tasks within an Action Activity. [cite: 1, Moveworks Compound Action Creation]
+
+Define MVP (Minimum Viable Product) Features:
+
+Wizard support for creating a single Compound Action YAML file, intended for use in an Action Activity.
+
+Support for core components: input_args, steps. [cite: 1, Moveworks Compound Action Creation]
+
+Support for basic action types: HTTP Action, Script Action (APIthon), and a few common Built-in Actions. [cite: 1, 11, 12, 14, Moveworks Compound Action Creation]
+
+Support for at least one simple control flow: switch or sequential steps. [cite: 12, Moveworks Compound Action Creation]
+
+Support for progress_updates and delay_config fields within actions. [cite: 1, compound-action-syntax-reference.md]
+
+Basic YAML validation and generation.
+
+Simple command-line interface (CLI) or a very basic GUI.
+
+Define Advanced/Future Features:
+
+Support for all control flow constructs (for, parallel, try/catch, return, raise). [cite: 1, compound-action-syntax-reference.md; 12, Moveworks Compound Action Creation]
+
+Full catalog of Built-in Actions. [cite: 14, Moveworks Compound Action Creation]
+
+Advanced assistance for creating Moveworks Data Mapping Language (Bender) JSON for the Compound Action's input_args. [cite: 1, moveworks-bender-language-reference.md]
+
+GUI for the wizard.
+
+"AI" features:
+
+Natural Language Processing (NLP) to suggest action types based on user description.
+
+Smart suggestions for input_args based on action type.
+
+Template library for common Compound Actions.
+
+Contextual help, explaining how the generated Compound Action fits into an Action Activity and linking to documentation.
+
+Out-of-Scope (for MVP):
+
+Direct interaction with Moveworks platform APIs (e.g., deploying the YAML).
+
+Generating the full Plugin or Action Activity configuration (wizard focuses on Compound Action YAML only).
+
+Full AI-driven YAML generation from a high-level sentence (start with structured input).
+
+Technical Stack & Architecture:
+
+Language: Python (as requested).
+
+YAML Handling: PyYAML library for parsing and generation.
+
+Wizard Logic:
+
+Start with a rule-based engine. Define classes/objects for each YAML construct (Action, Script, HttpAction, SwitchCase, etc.) that know how to serialize themselves to YAML.
+
+The wizard will interactively populate instances of these classes.
+
+User Interface (UI):
+
+MVP: click for a CLI, or tkinter / customtkinter for a very basic GUI.
+
+Advanced: PyQt6/PySide6, Streamlit, or a web-based framework like Flask/Django with a simple frontend if more powerful UI/UX is needed.
+
+AI Component Strategy (Phased):
+
+Phase 1 (Guided Logic): No true AI, but intelligent prompting based on selected options (e.g., if user selects "HTTP Action," prompt for method, URL, headers, progress_updates etc.).
+
+Phase 2 (Basic NLP/Suggestions): Potentially use libraries like spaCy or a simple keyword matcher to suggest action types.
+
+Data Modeling for YAML Constructs:
+
+Define Python classes or data structures that mirror the schemas provided in compound-action-syntax-reference.md and Moveworks Compound Action Creation.
+
+Ensure these models accurately represent constructs like action, script, switch, for, parallel, return, raise, try_catch as detailed in the syntax reference. [cite: 1, compound-action-syntax-reference.md]
+
+Phase 2: Core Engine Development (MVP) (3-4 Weeks)
+Objective: Build the foundational YAML generation logic for Compound Actions intended for Action Activities and a basic user interaction mechanism.
+
+YAML Construct Implementation:
+
+Implement Python classes for MVP constructs (e.g., CompoundAction, InputArg, Step, HttpActionDetails, ApiThonScriptDetails, BuiltInActionDetails, SwitchStatement).
+
+Each class should have methods to:
+
+Accept necessary parameters.
+
+Validate inputs (e.g., required fields, basic data types).
+
+Serialize its state to a Python dictionary structure that PyYAML can convert to correct Moveworks YAML for Compound Actions.
+
+Wizard Logic - Core Flow:
+
+Develop the sequence of questions/prompts for the MVP, keeping in mind the end use in an Action Activity.
+
+Example flow:
+
+Name the Compound Action. Description? [cite: 8, Moveworks Compound Action Creation]
+
+Define Input Arguments (input_args) for the Compound Action? (Loop for multiple). [cite: 1, Moveworks Compound Action Creation]
+
+Add steps:
+
+Choose action type (HTTP, Script, Built-in).
+
+Based on type, prompt for specific fields (e.g., for HTTP: action_name, output_key, input_args for the HTTP action itself, method, endpoint_url, delay_config, progress_updates etc.). [cite: 1, compound-action-syntax-reference.md]
+
+Handle APIthon code input, ensuring code: | for multi-line scripts. [cite: 1, APIthon.md; 10, Moveworks Compound Action Creation]
+
+Handle output_key for actions and scripts. [cite: 1, compound-action-syntax-reference.md]
+
+Implement sequential step addition.
+
+Implement basic switch logic: conditions and their respective steps blocks. [cite: 1, compound-action-syntax-reference.md; 12, Moveworks Compound Action Creation]
+
+YAML Generation & Output:
+
+Function to take the populated CompoundAction object and convert it to a YAML string.
+
+Ensure correct indentation and formatting as per Moveworks examples and syntax requirements (e.g., multi-line strings, DSL escaping [cite: 10, Moveworks Compound Action Creation]).
+
+Basic UI/CLI Implementation (MVP):
+
+Implement the wizard flow using the chosen UI/CLI framework.
+
+Display prompts, accept user input.
+
+Output the generated YAML to console or a file.
+
+Phase 3: MVP Testing & Refinement (1-2 Weeks)
+Objective: Ensure the MVP generates valid Compound Action YAML suitable for Action Activities.
+
+Unit Testing:
+
+Test individual YAML construct classes for correct serialization.
+
+Test input validation logic.
+
+Integration Testing:
+
+Test the wizard flow with various combinations of inputs.
+
+Validate generated YAML against examples from Moveworks documentation.
+
+Crucially, test the generated Compound Action YAML by manually incorporating it into an Action Activity within a Moveworks test environment (if possible) to ensure compatibility and correct execution. [cite: 2, 3, Moveworks Compound Action Creation]
+
+Focus on common pitfalls like incorrect input_args referencing (data.*, meta_info.*) [cite: data-handling.md] or APIthon limitations. [cite: 1, APIthon.md; 13, Moveworks Compound Action Creation]
+
+User Feedback & Iteration:
+
+Have a Moveworks developer (or yourself) use the wizard to generate YAML for a typical Action Activity scenario and provide feedback.
+
+Refine prompts and flow.
+
+Phase 4: Advanced Features & UI/AI Enhancement (Ongoing, Iterative)
+Objective: Expand functionality, improve user experience, and integrate smarter assistance, always within the post-April 2025 context.
+
+Full YAML Construct Support:
+
+Incrementally add classes and wizard logic for remaining control flow constructs (for, parallel, try/catch, return, raise) as defined in compound-action-syntax-reference.md. [cite: 1, compound-action-syntax-reference.md]
+
+Comprehensive Built-in Action Catalog:
+
+Create a data structure for Moveworks Built-in Actions and their input_args. [cite: 14, Moveworks Compound Action Creation]
+
+Data Mapper (Bender) Assistance for input_args:
+
+Provide enhanced support for constructing Bender JSON for the Compound Action's input_args fields. [cite: moveworks-bender-language-reference.md] This could include sub-wizards for common Bender functions like MAP(), CONCAT(), RENDER() etc. [cite: moveworks-bender-language-reference.md]
+
+GUI Development/Enhancement:
+
+If started with CLI, migrate to a richer GUI.
+
+Features: Visual tree of the Compound Action, contextual help explaining parameters and their role when used in an Action Activity.
+
+AI Feature Integration:
+
+NLP for Action Suggestion: User types "I need to get user details and then update a record." -> Wizard suggests appropriate action sequence.
+
+APIthon Snippet Generation: Mindful of APIthon limitations. [cite: 1, APIthon.md; 13, Moveworks Compound Action Creation]
+
+Template Library:
+
+Templates for common Compound Actions used within Action Activities.
+
+Guidance within Post-April 2025 Architecture:
+
+The wizard should produce YAML suitable for Compound Actions invoked by Action Activities.
+
+Educational components within the wizard can guide users on when a Compound Action (within an Action Activity) is preferred over direct action chaining within a Plugin for workflow-focused tasks, based on post-April 2025 best practices. This aligns with Compound Actions being used for orchestrating fixed sequences. [cite: 1, Moveworks Compound Action Creation]
+
+Phase 5: Continuous Testing, Documentation & Deployment (Ongoing)
+Comprehensive Testing:
+
+Expand tests, especially focusing on the integration within an Action Activity context. [cite: 15, Moveworks Compound Action Creation]
+
+User Documentation:
+
+README.md and user guide. Emphasize that the output is for Compound Actions designed to be used in Action Activities.
+
+Developer Documentation (if applicable):
+
+Document codebase.
+
+Deployment:
+
+Package the Python application.
+
+Key Challenges & Considerations (Post-April 2025 Focus):
+Complexity of Moveworks YAML: Adhering to the stringent syntax remains key. [cite: 1, compound-action-syntax-reference.md]
+
+Interaction with Action Activity Mappers: While the wizard generates the Compound Action YAML, users will need to correctly configure Input/Output Mappers in the Action Activity that uses this Compound Action. The wizard could provide guidance or placeholders in comments. [cite: 3, Moveworks Compound Action Creation]
+
+Data Flow: Understanding data flow from Plugin slots -> Action Activity Input Mapper -> Compound Action input_args -> Compound Action steps -> Action Activity Output Mapper -> Plugin context is vital for users. The wizard should clearly define the input_args needed by the Compound Action. [cite: 3, Moveworks Compound Action Creation]
+
+Asynchronous Nature: Remember Compound Actions in Action Activities are asynchronous and use "progress updates". The wizard should facilitate adding progress_updates to actions. [cite: 3, Moveworks Compound Action Creation; 1, compound-action-syntax-reference.md]
+
+Testing: Testing requires not just YAML validation, but seeing the Compound Action execute correctly when called by an Action Activity in a plugin. [cite: 15, Moveworks Compound Action Creation]
+
+APIthon Limitations: Strict adherence to APIthon's constraints is necessary. [cite: 1, APIthon.md; 13, Moveworks Compound Action Creation]

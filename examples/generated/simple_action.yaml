@@ -1,0 +1,10 @@
+input_args:
+  user_id: data.employee_id
+action:
+  action_name: fetch_user_details
+  output_key: user_info
+  input_args:
+    user_id: data.user_id
+  progress_updates:
+    on_pending: Fetching user details, please wait...
+    on_complete: User details fetched successfully.

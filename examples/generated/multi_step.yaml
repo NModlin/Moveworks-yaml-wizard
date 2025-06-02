@@ -1,0 +1,19 @@
+input_args:
+  user_id: data.employee_id
+steps:
+- action:
+    action_name: fetch_user_details
+    output_key: user_info
+    input_args:
+      user_id: data.user_id
+- script:
+    code: return user_info.get('email', '').upper()
+    output_key: processed_email
+    input_args:
+      user_info: data.user_info
+- action:
+    action_name: mw.send_plaintext_chat_notification
+    output_key: notification_result
+    input_args:
+      user_record_id: data.user_info.record_id
+      message: 'Your email has been processed: data.processed_email'

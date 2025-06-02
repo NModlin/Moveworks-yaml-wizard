@@ -1,0 +1,62 @@
+input_args:
+  employee_id: data.user_id
+  manager_card: data.notification_card
+steps:
+- action:
+    action_name: mw.get_user_details
+    output_key: user_info
+    input_args:
+      user_id: data.employee_id
+    progress_updates:
+      on_pending: Fetching user details...
+      on_complete: User details retrieved successfully
+- script:
+    code: |-
+      # Process user information
+      
+email = user_info.get('email', '').lower()
+      
+department = user_info.get('department', 'Unknown')
+      
+full_name = f"{user_info.get('first_name', '')} {user_info.get('last_name', '')}"
+      
+
+# Create processed result
+      
+result = {
+      
+    'processed_email': email,
+      
+    'department': department,
+      
+    'display_name': full_name.strip(),
+      
+    'is_manager': user_info.get('role', '').lower() == 'manager'
+      
+}
+    output_key: processed_user
+    input_args:
+      user_info: data.user_info
+- switch:
+    cases:
+    - condition: data.processed_user.is_manager == true
+      steps:
+      - action:
+          action_name: mw.send_rich_chat_notification
+          output_key: manager_notification
+          input_args:
+            user_record_id: data.user_info.record_id
+            card_content: data.manager_card
+    default:
+      steps:
+      - action:
+          action_name: mw.send_plaintext_chat_notification
+          output_key: employee_notification
+          input_args:
+            user_record_id: data.user_info.record_id
+            message: Your request has been processed successfully.
+- return:
+    output_mapper:
+      user_email: data.processed_user.processed_email
+      user_department: data.processed_user.department
+      notification_sent: 'true'
