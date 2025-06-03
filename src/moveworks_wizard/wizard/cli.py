@@ -1064,7 +1064,8 @@ def validate_bender(expression: str):
 @click.option('--file', '-f', 'json_file', type=click.Path(exists=True), help='JSON file to analyze')
 @click.option('--source', '-s', default='http_response', help='Name for the data source')
 @click.option('--output', '-o', type=click.Path(), help='Output file for suggestions')
-def analyze_json(json_file, source, output):
+@click.option('--yaml-example', '-y', is_flag=True, help='Generate comprehensive YAML example for array data extraction')
+def analyze_json(json_file, source, output, yaml_example):
     """Analyze JSON from HTTP connector test results to suggest variables."""
     click.echo("🔍 JSON Analysis for Variable Suggestions")
     click.echo("This analyzes HTTP connector test results to suggest variables for Compound Actions.")
@@ -1111,6 +1112,22 @@ def analyze_json(json_file, source, output):
         display_text = analyzer.format_suggestions_for_display(suggestions)
         click.echo(display_text)
 
+        # Generate comprehensive YAML example if requested
+        if yaml_example:
+            click.echo("\n" + "="*60)
+            click.echo("📋 COMPREHENSIVE YAML EXAMPLE FOR ARRAY DATA EXTRACTION:")
+            click.echo("="*60)
+
+            yaml_content = analyzer.generate_comprehensive_yaml_example(source)
+            click.echo(yaml_content)
+
+            # Optionally save YAML example to file
+            if output:
+                yaml_output_path = Path(output).with_suffix('.yaml')
+                with open(yaml_output_path, 'w', encoding='utf-8') as f:
+                    f.write(yaml_content)
+                click.echo(f"\n💾 YAML example saved to: {yaml_output_path}")
+
         # Save to file if requested
         if output:
             analyzer.export_suggestions_to_json(Path(output))
@@ -1121,6 +1138,7 @@ def analyze_json(json_file, source, output):
         click.echo("• Use these suggestions when creating Compound Action input arguments")
         click.echo("• The 'Bender' column shows the exact expression to use")
         click.echo("• The 'Example' column shows how to use the variable in steps")
+        click.echo("• Use --yaml-example flag to generate complete YAML for array data extraction")
         click.echo("• Run 'moveworks-wizard wizard' to create a Compound Action with these variables")
 
     except json.JSONDecodeError as e:

@@ -1,0 +1,116 @@
+# Comprehensive data extraction from JSON arrays
+# This YAML extracts all properties from array items
+
+steps:
+  - # Step 1: Extract all id values
+    script:
+      code: |
+        # Extract id from all items in value
+        result = []
+        for item in license_api.value:
+          if 'id' in item:
+            result.append(item['id'])
+        return result
+    output_key: all_id_values
+
+  - # Step 2: Extract all skuId values
+    script:
+      code: |
+        # Extract skuId from all items in value
+        result = []
+        for item in license_api.value:
+          if 'skuId' in item:
+            result.append(item['skuId'])
+        return result
+    output_key: all_skuId_values
+
+  - # Step 3: Extract all provisioningStatus values
+    script:
+      code: |
+        # Extract provisioningStatus from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'provisioningStatus' in item:
+            result.append(item['provisioningStatus'])
+        return result
+    output_key: all_provisioningStatus_values
+
+  - # Step 4: Extract all servicePlanId values
+    script:
+      code: |
+        # Extract servicePlanId from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'servicePlanId' in item:
+            result.append(item['servicePlanId'])
+        return result
+    output_key: all_servicePlanId_values
+
+  - # Step 5: Extract all servicePlanName values
+    script:
+      code: |
+        # Extract servicePlanName from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'servicePlanName' in item:
+            result.append(item['servicePlanName'])
+        return result
+    output_key: all_servicePlanName_values
+
+  - # Step 6: Extract all servicePlans values
+    script:
+      code: |
+        # Extract servicePlans from all items in value
+        result = []
+        for item in license_api.value:
+          if 'servicePlans' in item:
+            result.append(item['servicePlans'])
+        return result
+    output_key: all_servicePlans_values
+
+  - # Step 7: Extract all skuPartNumber values
+    script:
+      code: |
+        # Extract skuPartNumber from all items in value
+        result = []
+        for item in license_api.value:
+          if 'skuPartNumber' in item:
+            result.append(item['skuPartNumber'])
+        return result
+    output_key: all_skuPartNumber_values
+
+  - # Step 8: Extract all appliesTo values
+    script:
+      code: |
+        # Extract appliesTo from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'appliesTo' in item:
+            result.append(item['appliesTo'])
+        return result
+    output_key: all_appliesTo_values
+
+  - # Step 9: Combine all extracted data
+    script:
+      code: |
+        # Combine all extracted array properties into a summary
+        summary = {}
+        summary['id_list'] = all_id_values
+        summary['skuId_list'] = all_skuId_values
+        summary['provisioningStatus_list'] = all_provisioningStatus_values
+        summary['servicePlanId_list'] = all_servicePlanId_values
+        summary['servicePlanName_list'] = all_servicePlanName_values
+        summary['servicePlans_list'] = all_servicePlans_values
+        summary['skuPartNumber_list'] = all_skuPartNumber_values
+        summary['appliesTo_list'] = all_appliesTo_values
+        return summary
+    output_key: extracted_data_summary
+    input_args:
+      all_id_values: "all_id_values"
+      all_skuId_values: "all_skuId_values"
+      all_provisioningStatus_values: "all_provisioningStatus_values"
+      all_servicePlanId_values: "all_servicePlanId_values"
+      all_servicePlanName_values: "all_servicePlanName_values"
+      all_servicePlans_values: "all_servicePlans_values"
+      all_skuPartNumber_values: "all_skuPartNumber_values"
+      all_appliesTo_values: "all_appliesTo_values"

@@ -1,0 +1,204 @@
+[
+  {
+    "path": "value[*].id",
+    "value": "7V6vYLOcM0qoGqQFu4z1Y_e2zO9BVg5OvRC0l24b9o4",
+    "data_type": "array_property[string]",
+    "description": "All id values from array items (string)",
+    "bender_expression": "license_api.value[*].id",
+    "example_usage": "steps:\n  - for_each: \"license_api.value\"\n    output_key: \"all_ids\"\n    script:\n      code: \"return [item.id for item in license_api.value]\" "
+  },
+  {
+    "path": "value[*].skuId",
+    "value": "efccb6f7-5641-4e0e-bd10-b4976e1bf68e",
+    "data_type": "array_property[uuid]",
+    "description": "All skuId values from array items (uuid)",
+    "bender_expression": "license_api.value[*].skuId",
+    "example_usage": "steps:\n  - for_each: \"license_api.value\"\n    output_key: \"all_skuIds\"\n    script:\n      code: \"return [item.skuId for item in license_api.value]\" "
+  },
+  {
+    "path": "value[0].servicePlans[*].provisioningStatus",
+    "value": "Success",
+    "data_type": "array_property[string]",
+    "description": "All provisioningStatus values from array items (string)",
+    "bender_expression": "license_api.value[0].servicePlans[*].provisioningStatus",
+    "example_usage": "steps:\n  - for_each: \"license_api.value[0].servicePlans\"\n    output_key: \"provisioningStatus_values\"\n    script:\n      code: \"return [item.provisioningStatus for item in license_api.value[0].servicePlans]\" "
+  },
+  {
+    "path": "value[0].servicePlans[*].servicePlanId",
+    "value": "113feb6c-3fe4-4440-bddc-54d774bf0318",
+    "data_type": "array_property[uuid]",
+    "description": "All servicePlanId values from array items (uuid)",
+    "bender_expression": "license_api.value[0].servicePlans[*].servicePlanId",
+    "example_usage": "steps:\n  - for_each: \"license_api.value[0].servicePlans\"\n    output_key: \"all_servicePlanIds\"\n    script:\n      code: \"return [item.servicePlanId for item in license_api.value[0].servicePlans]\" "
+  },
+  {
+    "path": "value[0].servicePlans[*].servicePlanName",
+    "value": "EXCHANGE_S_FOUNDATION",
+    "data_type": "array_property[string]",
+    "description": "All servicePlanName values from array items (string)",
+    "bender_expression": "license_api.value[0].servicePlans[*].servicePlanName",
+    "example_usage": "steps:\n  - for_each: \"license_api.value[0].servicePlans\"\n    output_key: \"servicePlanName_list\"\n    script:\n      code: \"return [item.servicePlanName for item in license_api.value[0].servicePlans]\" "
+  },
+  {
+    "path": "value[*].servicePlans",
+    "value": [
+      {
+        "servicePlanId": "113feb6c-3fe4-4440-bddc-54d774bf0318",
+        "servicePlanName": "EXCHANGE_S_FOUNDATION",
+        "provisioningStatus": "Success",
+        "appliesTo": "Company"
+      },
+      {
+        "servicePlanId": "932ad362-64a8-4783-9106-97849a1a30b9",
+        "servicePlanName": "ADALLOM_S_DISCOVERY",
+        "provisioningStatus": "Success",
+        "appliesTo": "User"
+      }
+    ],
+    "data_type": "array_property[array[2]]",
+    "description": "All servicePlans values from array items (array[2])",
+    "bender_expression": "license_api.value[*].servicePlans",
+    "example_usage": "steps:\n  - for_each: \"license_api.value\"\n    output_key: \"servicePlans_values\"\n    script:\n      code: \"return [item.servicePlans for item in license_api.value]\" "
+  },
+  {
+    "path": "value[*].skuPartNumber",
+    "value": "EMS",
+    "data_type": "array_property[string]",
+    "description": "All skuPartNumber values from array items (string)",
+    "bender_expression": "license_api.value[*].skuPartNumber",
+    "example_usage": "steps:\n  - for_each: \"license_api.value\"\n    output_key: \"skuPartNumber_values\"\n    script:\n      code: \"return [item.skuPartNumber for item in license_api.value]\" "
+  },
+  {
+    "path": "value[0].servicePlans[*].appliesTo",
+    "value": "Company",
+    "data_type": "array_property[string]",
+    "description": "All appliesTo values from array items (string)",
+    "bender_expression": "license_api.value[0].servicePlans[*].appliesTo",
+    "example_usage": "steps:\n  - for_each: \"license_api.value[0].servicePlans\"\n    output_key: \"appliesTo_values\"\n    script:\n      code: \"return [item.appliesTo for item in license_api.value[0].servicePlans]\" "
+  },
+  {
+    "path": "@odata.context",
+    "value": "https://graph.microsoft.com/v1.0/$metadata#users('mtestacct%40rehrig.com')/licenseDetails",
+    "data_type": "url",
+    "description": "Data payload (url)",
+    "bender_expression": "license_api.@odata.context",
+    "example_usage": "input_args: {\"data\": \"@odata.context\"}"
+  },
+  {
+    "path": "value",
+    "value": [
+      {
+        "id": "7V6vYLOcM0qoGqQFu4z1Y_e2zO9BVg5OvRC0l24b9o4",
+        "skuId": "efccb6f7-5641-4e0e-bd10-b4976e1bf68e",
+        "skuPartNumber": "EMS",
+        "servicePlans": [
+          {
+            "servicePlanId": "113feb6c-3fe4-4440-bddc-54d774bf0318",
+            "servicePlanName": "EXCHANGE_S_FOUNDATION",
+            "provisioningStatus": "Success",
+            "appliesTo": "Company"
+          },
+          {
+            "servicePlanId": "932ad362-64a8-4783-9106-97849a1a30b9",
+            "servicePlanName": "ADALLOM_S_DISCOVERY",
+            "provisioningStatus": "Success",
+            "appliesTo": "User"
+          }
+        ]
+      },
+      {
+        "id": "7V6vYLOcM0qoGqQFu4z1Y4RZWEsbZYpEnlM7EPBpz38",
+        "skuId": "4b585984-651b-448a-9e53-3b10f069cf7f",
+        "skuPartNumber": "DESKLESSPACK",
+        "servicePlans": [
+          {
+            "servicePlanId": "13b6da2c-0d84-450e-9f69-a33e221387ca",
+            "servicePlanName": "PEOPLE_SKILLS_FOUNDATION",
+            "provisioningStatus": "PendingProvisioning",
+            "appliesTo": "User"
+          }
+        ]
+      }
+    ],
+    "data_type": "array[2]",
+    "description": "Array with 2 items",
+    "bender_expression": "license_api.value",
+    "example_usage": "for_each: \"value\""
+  },
+  {
+    "path": "value[0].servicePlans",
+    "value": [
+      {
+        "servicePlanId": "113feb6c-3fe4-4440-bddc-54d774bf0318",
+        "servicePlanName": "EXCHANGE_S_FOUNDATION",
+        "provisioningStatus": "Success",
+        "appliesTo": "Company"
+      },
+      {
+        "servicePlanId": "932ad362-64a8-4783-9106-97849a1a30b9",
+        "servicePlanName": "ADALLOM_S_DISCOVERY",
+        "provisioningStatus": "Success",
+        "appliesTo": "User"
+      }
+    ],
+    "data_type": "array[2]",
+    "description": "Array with 2 items",
+    "bender_expression": "license_api.value[0].servicePlans",
+    "example_usage": "for_each: \"value[0].servicePlans\""
+  },
+  {
+    "path": "value.length",
+    "value": 2,
+    "data_type": "integer",
+    "description": "Numeric value: 2",
+    "bender_expression": "license_api.value.length",
+    "example_usage": "input_args: {\"data\": \"value.length\"}"
+  },
+  {
+    "path": "value[0].servicePlans.length",
+    "value": 2,
+    "data_type": "integer",
+    "description": "Numeric value: 2",
+    "bender_expression": "license_api.value[0].servicePlans.length",
+    "example_usage": "input_args: {\"data\": \"value[0].servicePlans.length\"}"
+  },
+  {
+    "path": "value[0]",
+    "value": {
+      "id": "7V6vYLOcM0qoGqQFu4z1Y_e2zO9BVg5OvRC0l24b9o4",
+      "skuId": "efccb6f7-5641-4e0e-bd10-b4976e1bf68e",
+      "skuPartNumber": "EMS",
+      "servicePlans": [
+        {
+          "servicePlanId": "113feb6c-3fe4-4440-bddc-54d774bf0318",
+          "servicePlanName": "EXCHANGE_S_FOUNDATION",
+          "provisioningStatus": "Success",
+          "appliesTo": "Company"
+        },
+        {
+          "servicePlanId": "932ad362-64a8-4783-9106-97849a1a30b9",
+          "servicePlanName": "ADALLOM_S_DISCOVERY",
+          "provisioningStatus": "Success",
+          "appliesTo": "User"
+        }
+      ]
+    },
+    "data_type": "object[4 keys]",
+    "description": "Object with 4 properties",
+    "bender_expression": "license_api.value[0]",
+    "example_usage": "input_args: {\"data\": \"value[0]\"}"
+  },
+  {
+    "path": "value[0].servicePlans[0]",
+    "value": {
+      "servicePlanId": "113feb6c-3fe4-4440-bddc-54d774bf0318",
+      "servicePlanName": "EXCHANGE_S_FOUNDATION",
+      "provisioningStatus": "Success",
+      "appliesTo": "Company"
+    },
+    "data_type": "object[4 keys]",
+    "description": "Object with 4 properties",
+    "bender_expression": "license_api.value[0].servicePlans[0]",
+    "example_usage": "input_args: {\"data\": \"value[0].servicePlans[0]\"}"
+  }
+]

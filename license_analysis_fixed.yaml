@@ -1,0 +1,116 @@
+# Comprehensive data extraction from JSON arrays
+# This YAML extracts all properties from array items
+
+steps:
+  - # Step 1: Extract all id values
+    script:
+      code: |
+        # Extract id from all items in value
+        result = []
+        for item in license_api.value:
+          if 'id' in item:
+            result.append(item['id'])
+        return result
+    output_key: extractedIdList
+
+  - # Step 2: Extract all skuId values
+    script:
+      code: |
+        # Extract skuId from all items in value
+        result = []
+        for item in license_api.value:
+          if 'skuId' in item:
+            result.append(item['skuId'])
+        return result
+    output_key: extractedSkuidList
+
+  - # Step 3: Extract all provisioningStatus values
+    script:
+      code: |
+        # Extract provisioningStatus from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'provisioningStatus' in item:
+            result.append(item['provisioningStatus'])
+        return result
+    output_key: extractedProvisioningstatusList
+
+  - # Step 4: Extract all servicePlanId values
+    script:
+      code: |
+        # Extract servicePlanId from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'servicePlanId' in item:
+            result.append(item['servicePlanId'])
+        return result
+    output_key: extractedServiceplanidList
+
+  - # Step 5: Extract all servicePlanName values
+    script:
+      code: |
+        # Extract servicePlanName from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'servicePlanName' in item:
+            result.append(item['servicePlanName'])
+        return result
+    output_key: extractedServiceplannameList
+
+  - # Step 6: Extract all servicePlans values
+    script:
+      code: |
+        # Extract servicePlans from all items in value
+        result = []
+        for item in license_api.value:
+          if 'servicePlans' in item:
+            result.append(item['servicePlans'])
+        return result
+    output_key: extractedServiceplansList
+
+  - # Step 7: Extract all skuPartNumber values
+    script:
+      code: |
+        # Extract skuPartNumber from all items in value
+        result = []
+        for item in license_api.value:
+          if 'skuPartNumber' in item:
+            result.append(item['skuPartNumber'])
+        return result
+    output_key: extractedSkupartnumberList
+
+  - # Step 8: Extract all appliesTo values
+    script:
+      code: |
+        # Extract appliesTo from all items in value[0].servicePlans
+        result = []
+        for item in license_api.value[0].servicePlans:
+          if 'appliesTo' in item:
+            result.append(item['appliesTo'])
+        return result
+    output_key: extractedAppliestoList
+
+  - # Step 9: Combine all extracted data
+    script:
+      code: |
+        # Combine all extracted array properties into a summary
+        summary = {}
+        summary['id_list'] = extractedIdList
+        summary['skuId_list'] = extractedSkuidList
+        summary['provisioningStatus_list'] = extractedProvisioningstatusList
+        summary['servicePlanId_list'] = extractedServiceplanidList
+        summary['servicePlanName_list'] = extractedServiceplannameList
+        summary['servicePlans_list'] = extractedServiceplansList
+        summary['skuPartNumber_list'] = extractedSkupartnumberList
+        summary['appliesTo_list'] = extractedAppliestoList
+        return summary
+    output_key: extractedDataSummary
+    input_args:
+      extractedIdList: "extractedIdList"
+      extractedSkuidList: "extractedSkuidList"
+      extractedProvisioningstatusList: "extractedProvisioningstatusList"
+      extractedServiceplanidList: "extractedServiceplanidList"
+      extractedServiceplannameList: "extractedServiceplannameList"
+      extractedServiceplansList: "extractedServiceplansList"
+      extractedSkupartnumberList: "extractedSkupartnumberList"
+      extractedAppliestoList: "extractedAppliestoList"
